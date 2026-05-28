@@ -43,6 +43,7 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public ProductDto getProduct(UUID id) {
         log.info("Cache miss! Fetching product from the database for ID: {}", id);
+        slowDbCall();
         Product product = productRepo.findById(id).
                 orElseThrow(
                         () -> {
@@ -56,5 +57,11 @@ public class ProductServiceImpl implements ProductService{
 
     }
 
-
+    private void slowDbCall() {
+        try {
+                Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }
