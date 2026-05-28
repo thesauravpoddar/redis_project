@@ -1,0 +1,21 @@
+package com.project.redis_project.Dto.ProductDto;
+
+import com.project.redis_project.Entities.Enums.Category;
+import com.project.redis_project.Entities.Enums.Stock;
+import jakarta.validation.constraints.NotBlank;
+
+import java.math.BigDecimal;
+
+
+public record ProductDto(
+        @NotBlank(message = "product name cannot be blank")
+         String productName,
+         @NotBlank(message = "description cannot be blank")
+         String description,
+
+         @NotBlank(message = "price cannot be blank")
+         BigDecimal price,
+         Stock stock,
+         Category category
+) {}
+

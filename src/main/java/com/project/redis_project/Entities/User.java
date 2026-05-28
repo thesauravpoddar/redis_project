@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,10 +23,10 @@ public class User {
     @Column(name = "Username", unique = true, nullable = false, length = 20)
     private String name;
 
-    @Column(name = "UserEmail", nullable = false)
+    @Column(name = "UserEmail", nullable = false, updatable = false)
     private String email;
 
-    @Column(name = "Phone_Number", nullable = false)
+    @Column(name = "Phone_Number", nullable = false, updatable = false)
     private String phoneNo;
 
     @DateTimeFormat
