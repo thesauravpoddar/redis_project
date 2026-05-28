@@ -5,10 +5,12 @@ import com.project.redis_project.Service.products.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -17,10 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
     private final ProductService productService;
 
+    @PostMapping("/product")
     public ResponseEntity<ProductDto> CreateProduct(
             @Valid @RequestBody ProductDto productDto
     ) {
         ProductDto product = productService.createProduct(productDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDto> GetProduct(@PathVariable UUID id) {
+        ProductDto product = productService.getProduct(id);
+        return ResponseEntity.ok(product);
+    }
+
+
 
 }

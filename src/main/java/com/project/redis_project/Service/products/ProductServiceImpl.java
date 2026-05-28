@@ -1,10 +1,14 @@
 package com.project.redis_project.Service.products;
 
 import com.project.redis_project.Dto.ProductDto.ProductDto;
+import com.project.redis_project.Entities.Product;
 import com.project.redis_project.Repositries.ProductRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -19,7 +23,38 @@ public class ProductServiceImpl implements ProductService{
             log.error("product with this name already exists");
             throw new IllegalArgumentException("product with this name already exists");
         }
+        Product product = Product.builder()
+                .productName(productDto.productName())
+                .description(productDto.description())
+                .price(productDto.price())
+                .stock(productDto.stock())
+                .category(productDto.category())
+                        .build();
 
-        return null;
+        Product savedProduct = productRepo.save(product);
+        return new ProductDto(savedProduct.getProductId(),
+                savedProduct.getProductName(),
+                savedProduct.getDescription(),
+                savedProduct.getPrice(),
+                savedProduct.getStock(),
+                savedProduct.getCategory());
     }
+    @Cacheable(value = "products", key = "#id")
+    @Override
+    public ProductDto getProduct(UUID id) {
+        log.info("Cache miss! Fetching product from the database for ID: {}", id);
+        Product product = productRepo.findById(id).
+                orElseThrow(
+                        () -> {
+                            log.error("product does not exist with id: {}", id);
+                            return new IllegalArgumentException("product not found");
+                        }
+                );
+
+        return new ProductDto(product.getProductId(), product.getProductName(), product.getDescription(), product.getPrice(), product.getStock(),
+                product.getCategory());
+
+    }
+
+
 }
