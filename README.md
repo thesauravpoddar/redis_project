@@ -49,6 +49,28 @@ By default, Jackson 3 ignores `final` classes (including Java `record` types) wh
 * PostgreSQL (Running on `localhost:5432`)
 * Redis (Running on `localhost:6379`)
 
+### redis configuration
+I used `Java record` to save Product DTOs to handle the deserialization of those classes jackson 3 applies in the following way
+```java
+PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("com.project.redis_project.")
+                .allowIfSubType("java.util.")
+                .allowIfSubType("java.lang.")
+                .allowIfSubType("java.math.")
+                .allowIfSubType("java.time.")
+                .build();
+
+        ObjectMapper mapper = JsonMapper.builder()
+                .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .activateDefaultTypingAsProperty(
+                        typeValidator,
+                        DefaultTyping.NON_FINAL_AND_RECORDS,
+                        "@class"
+                )
+                .build();
+
+        GenericJacksonJsonRedisSerializer serializer = new GenericJacksonJsonRedisSerializer(mapper);
+```
 ### Starting Redis via Docker
 If a local Redis server is not installed, it can be spun up using Docker:
 ```bash
